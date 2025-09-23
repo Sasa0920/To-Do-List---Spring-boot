@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>To-Do List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://pic1.zhimg.com/v2-fbcd3c12d698f3082e417816c86bfc5e_r.jpg') no-repeat center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .todo-container {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            width: 400px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            color: #fff;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        form input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            border: none;
+            border-radius: 20px;
+            outline: none;
+            margin-right: 5px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        form button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50%;
+            background: #ff954d;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        form button:hover {
+            transform: scale(1.1);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        li:hover {
+            transform: scale(1.02);
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #ccc;
+        }
+
+        /* Unified Action Button Style */
+        .btn-action {
+            background: #ff954d;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            padding: 8px 12px;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+<div class="todo-container">
+    <h1>Get Things Done!</h1>
+
+    <!-- Add Task -->
+    <form th:action="@{/tasks}" method="post" class="d-flex justify-content-center">
+        <input type="text" name="title" placeholder="Add a new task..." required/>
+        <button type="submit">+</button>
+    </form>
+
+    <!-- Task List -->
+    <ul>
+        <li th:each="task : ${tasks}">
+            <span th:text="${task.title}" th:classappend="${task.completed} ? 'completed' : ''"></span>
+            <div style="display:flex; gap:5px;">
+                <!-- Toggle Completed -->
+                <form th:action="@{'/tasks/' + ${task.id}}" method="post" class="d-inline">
+                    <input type="hidden" name="_method" value="put"/>
+                    <input type="hidden" name="title" th:value="${task.title}"/>
+                    <input type="hidden" name="completed" th:value="${!task.completed}"/>
+                    <button type="submit" class="btn-action">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </form>
+
+                <!-- Delete -->
+                <form th:action="@{'/tasks/' + ${task.id}}" method="post" class="d-inline">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" class="btn-action">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
