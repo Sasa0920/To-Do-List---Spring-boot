@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      JAVA_HOME_21: /opt/hostedtoolcache/jdk/21.0.1/x64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Install Chromium (for Selenium)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-driver libnss3 libatk-bridge2.0-0 libgtk-3-0 libgbm1 fonts-liberation
+          echo "CHROME_BIN=/usr/bin/chromium-browser" >> $GITHUB_ENV
+          echo "CHROMEDRIVER=/usr/bin/chromedriver" >> $GITHUB_ENV
+
+      - name: Build & run tests
+        run: mvn -B test
